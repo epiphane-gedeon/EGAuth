@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enregistrement Client OAuth - EGAuth</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', sans-serif;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 550px;
+            width: 100%;
+            padding: 40px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #333;
+            font-size: 28px;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        input[type="text"],
+        input[type="url"],
+        textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        input[type="text"]:focus,
+        input[type="url"]:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #f5576c;
+            box-shadow: 0 0 0 3px rgba(245, 87, 108, 0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        input::placeholder,
+        textarea::placeholder {
+            color: #999;
+        }
+
+        .form-hint {
+            font-size: 12px;
+            color: #999;
+            margin-top: 5px;
+        }
+
+        .scopes-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 12px;
+            margin-top: 10px;
+        }
+
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            font-weight: normal;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            margin-right: 8px;
+            cursor: pointer;
+            accent-color: #f5576c;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            margin-top: 10px;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(245, 87, 108, 0.3);
+        }
+
+        .btn-secondary {
+            background: #f5f5f5;
+            color: #333;
+            margin-top: 10px;
+        }
+
+        .btn-secondary:hover {
+            background: #e8e8e8;
+        }
+
+        .alert {
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .alert-danger {
+            background: #fee;
+            border: 1px solid #fcc;
+            color: #c33;
+        }
+
+        .alert-success {
+            background: #efe;
+            border: 1px solid #cfc;
+            color: #3c3;
+        }
+
+        .alert-info {
+            background: #eef;
+            border: 1px solid #ccf;
+            color: #33c;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            color: #f5576c;
+            font-size: 14px;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid #f5576c;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .success-box {
+            display: none;
+            background: #efe;
+            border: 1px solid #cfc;
+            border-radius: 6px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .success-box h3 {
+            color: #3c3;
+            margin-bottom: 10px;
+        }
+
+        .code-block {
+            background: #f5f5f5;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 12px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            word-break: break-all;
+            margin: 8px 0;
+            color: #333;
+        }
+
+        .copy-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+            margin-top: 8px;
+        }
+
+        .copy-btn:hover {
+            background: #764ba2;
+        }
+
+        .required {
+            color: #e74c3c;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 Enregistrer un Client OAuth</h1>
+            <p>Créez une application pour utiliser les services d'authentification centralisés d'EGAuth</p>
+        </div>
+
+        <div id="alertContainer"></div>
+
+        <div id="successBox" class="success-box">
+            <h3>✅ Client enregistré avec succès !</h3>
+            <p style="margin-bottom: 12px; font-size: 14px;">Conservez bien vos identifiants :</p>
+            <div>
+                <strong>Client ID:</strong>
+                <div class="code-block" id="clientId"></div>
+            </div>
+            <div>
+                <strong>Client Secret:</strong>
+                <div class="code-block" id="clientSecret"></div>
+            </div>
+            <button class="copy-btn" onclick="copyToClipboard()">📋 Copier les identifiants</button>
+        </div>
+
+        <form id="registerForm">
+            <div class="form-group">
+                <label for="name">Nom de l'application <span class="required">*</span></label>
+                <input 
+                    type="text" 
+                    id="name" 
+                    name="name" 
+                    placeholder="Ma Super Application"
+                    required
+                >
+                <div class="form-hint">Le nom de votre application OAuth</div>
+            </div>
+
+            <div class="form-group">
+                <label for="redirectUris">URIs de redirection autorisées <span class="required">*</span></label>
+                <textarea 
+                    id="redirectUris" 
+                    name="redirect_uris" 
+                    placeholder="http://localhost:3000/callback&#10;https://monapp.com/auth/callback"
+                    required
+                ></textarea>
+                <div class="form-hint">Entrez une URI par ligne. Ce sont les URLs où rediriger après l'authentification</div>
+            </div>
+
+            <div class="form-group">
+                <label>Scopes demandés</label>
+                <div class="scopes-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="scopes" value="openid" checked>
+                        openid
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="scopes" value="profile" checked>
+                        profile
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="scopes" value="email" checked>
+                        email
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="scopes" value="offline_access">
+                        offline_access
+                    </label>
+                </div>
+                <div class="form-hint">Sélectionnez les permissions demandées à vos utilisateurs</div>
+            </div>
+
+            <button type="submit" class="btn btn-primary">
+                Enregistrer le Client
+            </button>
+
+            <div class="loading" id="loading">
+                <div class="spinner"></div> Enregistrement en cours...
+            </div>
+        </form>
+    </div>
+
+    <script>
+        const form = document.getElementById('registerForm');
+        const alertContainer = document.getElementById('alertContainer');
+        const loading = document.getElementById('loading');
+        const successBox = document.getElementById('successBox');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            alertContainer.innerHTML = '';
+            loading.style.display = 'block';
+            successBox.style.display = 'none';
+
+            // Récupérer les URIs de redirection
+            const redirectUris = document.getElementById('redirectUris')
+                .value
+                .split('\n')
+                .map(uri => uri.trim())
+                .filter(uri => uri.length > 0);
+
+            // Récupérer les scopes sélectionnés
+            const scopes = Array.from(
+                document.querySelectorAll('input[name="scopes"]:checked')
+            ).map(input => input.value);
+
+            const formData = {
+                name: document.getElementById('name').value,
+                redirect_uris: redirectUris,
+                allowed_scopes: scopes.length > 0 ? scopes : ['openid', 'profile', 'email']
+            };
+
+            try {
+                const response = await fetch('/clients/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    // Afficher les identifiants
+                    document.getElementById('clientId').textContent = data.client_id;
+                    document.getElementById('clientSecret').textContent = data.client_secret;
+                    successBox.style.display = 'block';
+                    form.reset();
+                } else {
+                    alertContainer.innerHTML = `
+                        <div class="alert alert-danger">
+                            ❌ ${data.detail || 'Erreur lors de l\'enregistrement'}
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                alertContainer.innerHTML = `
+                    <div class="alert alert-danger">
+                        ❌ Erreur réseau: ${error.message}
+                    </div>
+                `;
+            } finally {
+                loading.style.display = 'none';
+            }
+        });
+
+        function copyToClipboard() {
+            const clientId = document.getElementById('clientId').textContent;
+            const clientSecret = document.getElementById('clientSecret').textContent;
+            const text = `Client ID: ${clientId}\nClient Secret: ${clientSecret}`;
+            
+            navigator.clipboard.writeText(text).then(() => {
+                alert('✅ Identifiants copiés dans le presse-papiers !');
+            }).catch(() => {
+                alert('❌ Erreur lors de la copie');
+            });
+        }
+    </script>
+</body>
+</html>

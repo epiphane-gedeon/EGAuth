@@ -1,0 +1,21 @@
+<head>
+    <link rel="stylesheet" href="/static/css/auth.css">
+</head>
+<div class="container">
+    <div class="logo">
+        <img src="/static/images/logo.png" alt="">
+    </div>
+    
+    <form class="form" method='POST' action='/authorize'>
+      <input type='hidden' name='client_id' value='{{client_id}}'>
+      <input type='hidden' name='redirect_uri' value='{{redirect_uri}}'>
+      <input type='hidden' name='scope' value='{{scope}}'>
+      <input type='hidden' name='state' value='{{state or ""}}'>
+      <input type='hidden' name='nonce' value='{{nonce or ""}}'>
+      <input type='hidden' name='code_challenge' value='{{code_challenge or ""}}'>
+      <input type='hidden' name='code_challenge_method' value='{{code_challenge_method or ""}}'>
+      <input type='email' name='email' placeholder='Email' required>
+      <input type='password' name='password' placeholder='Mot de passe' required>
+      <button type='submit'>Se connecter avec EGAuth</button>
+    </form>
+</div>
