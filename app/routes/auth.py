@@ -13,7 +13,7 @@ templates = Jinja2Templates(directory="app/template")
  
 router = APIRouter(tags=['OAuth2'])
  
-@router.get('/authorize')
+@router.get('/authorize', response_class=HTMLResponse)
 async def authorize(
     response_type: str = Query(...), client_id: str = Query(...),
     redirect_uri: str  = Query(...), scope: str = Query('openid'),
@@ -46,39 +46,27 @@ async def authorize(
     </form>'''
     # return HTMLResponse(html)
     
-    return templates.TemplateResponse({
-        # "request": request,
-        "client_id": client_id,
-        "redirect_uri": redirect_uri,
-        "scope": scope,
-        "state": state or "",
-        "nonce": nonce or "",
-        "code_challenge": code_challenge or "",
-        "code_challenge_method": code_challenge_method or ""
-    }, "auth.html",{
-        # "request": request,
-        "client_id": client_id,
-        "redirect_uri": redirect_uri,
-        "scope": scope,
-        "state": state or "",
-        "nonce": nonce or "",
-        "code_challenge": code_challenge or "",
-        "code_challenge_method": code_challenge_method or ""
-    },)
+    # return templates.TemplateResponse({
+    #     # "request": request,
+    #     "client_id": client_id,
+    #     "redirect_uri": redirect_uri,
+    #     "scope": scope,
+    #     "state": state or "",
+    #     "nonce": nonce or "",
+    #     "code_challenge": code_challenge or "",
+    #     "code_challenge_method": code_challenge_method or ""
+    # }, "auth.html",{
+    #     "client_id": client_id,
+    #     "redirect_uri": redirect_uri,
+    #     "scope": scope,
+    #     "state": state or "",
+    #     "nonce": nonce or "",
+    #     "code_challenge": code_challenge or "",
+    #     "code_challenge_method": code_challenge_method or ""
+    # },)
     
-
-# @router.get('/authorize')
-# async def authorize(request: Request, client_id: str, redirect_uri: str, scope: str, state: str = "", nonce: str = "", code_challenge: str = "", code_challenge_method: str = ""):
-#     return templates.TemplateResponse("auth.html", {
-#         "request": request,
-#         "client_id": client_id,
-#         "redirect_uri": redirect_uri,
-#         "scope": scope,
-#         "state": state or "",
-#         "nonce": nonce or "",
-#         "code_challenge": code_challenge or "",
-#         "code_challenge_method": code_challenge_method or ""
-#     })
+    with open("app/template/auth.html", "r") as f:
+        return f.read()
  
  
 @router.post('/authorize')
