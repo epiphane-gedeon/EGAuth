@@ -6,6 +6,8 @@
 ![PostgreSQL](https://img.shields.io/badge/postgresql-16-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
+🇫🇷 Français | 🇬🇧 [English Version](README_EN.md)
+
 **EGAuth** est un serveur d'authentification centralisé conforme aux normes **OpenID Connect (OIDC)** et **OAuth 2.0**. Il permet à plusieurs applications SaaS (EGSaas1, EGSaas2, etc.) de partager un système d'authentification unique.
 
 ## 📋 Table des matières
